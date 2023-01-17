@@ -1,32 +1,70 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
 import './App.css'
+import {CheckBox} from "./Checkbox/Checkbox";
+import {useState} from "react";
+import {CheckboxTree} from "./CheckboxTree/CheckboxTree";
+
+const checkboxInfo = [
+  {
+    id: '1',
+    label: 'checkbox-1',
+    isChecked: false,
+    isIndeterminate: false,
+  },
+  {
+    id: '2',
+    label: 'checkbox-2',
+    isChecked: false,
+    isIndeterminate: false,
+  },
+  {
+    id: '3',
+    label: 'checkbox-3',
+    isChecked: false,
+    isIndeterminate: false,
+  },
+]
+
+const changeOneCheckbox = (prevState: typeof checkboxInfo, id: string) => {
+  return prevState.map((item) => {
+    if (item.id === id) {
+      return {
+        ...item,
+        isChecked: !item.isChecked
+      }
+    }
+    return item;
+  })
+}
+
+const changeFewCheckbox = (prevState: typeof checkboxInfo, ids: string[]) => {
+  return prevState.map((item) => {
+    const isContain = ids.some((id) => id === item.id);
+    if (isContain) {
+      return {
+        ...item,
+        isChecked: !item.isChecked
+      }
+    }
+    return item;
+  })
+}
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const [checkboxData, setCheckboxData] = useState(checkboxInfo)
+  const handleChange = (id: string | string[]) => {
+    setCheckboxData((prevState) => {
+      return Array.isArray(id)
+        ? changeFewCheckbox(prevState, id)
+        : changeOneCheckbox(prevState, id);
+    })
+  }
   return (
     <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src="/vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <CheckboxTree
+        label="root checkbox"
+        childCheckboxes={checkboxData}
+        onChange={handleChange}
+      />
     </div>
   )
 }
